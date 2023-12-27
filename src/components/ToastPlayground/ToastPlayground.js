@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Button from '../Button';
-import Toast from '../Toast';
+import ToastShelf from '../ToastShelf';
 
 import styles from './ToastPlayground.module.css';
 
@@ -10,14 +10,22 @@ const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 function ToastPlayground() {
   const [message, setMessage] = React.useState('');
   const [currentVariant, setVariant] = React.useState(VARIANT_OPTIONS[0]); // ['notice', 'warning', 'success', 'error'
-  const [showToast, setShowToast] = React.useState(false); // [true, false
+  const [toasts, setToasts] = React.useState([]);
   const handleMessageChange = (event) => setMessage(event.target.value);
   const handleVariantChange = (event) => setVariant(event.target.value);
   const handleSubmit = (event) => {
     event.preventDefault();
-    setShowToast(true);
+    setToasts([...toasts, {
+      id: Math.round(Math.random() * 100000 + 1),
+      variant: currentVariant,
+      message
+    }]);
+    setVariant('notice');
+    setMessage('');
   };
-  const handleDismissToast = () => setShowToast(false);
+  const removeToast = (id) => {
+    setToasts(toasts.filter((toast) => toast.id !== id));
+  };
   return (
     <div className={styles.wrapper}>
       <header>
@@ -25,9 +33,9 @@ function ToastPlayground() {
         <h1>Toast Playground</h1>
       </header>
 
-      {showToast && <Toast variant={currentVariant} message={message} dismissToast={handleDismissToast} />}
+      {toasts.length > 0 && <ToastShelf toasts={toasts} onDismiss={removeToast} />}
 
-      <div className={styles.controlsWrapper}>
+      <form onSubmit={handleSubmit} className={styles.controlsWrapper}>
         <div className={styles.row}>
           <label
             htmlFor="message"
@@ -64,15 +72,15 @@ function ToastPlayground() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.row}>
+        <div onSubmit={handleSubmit} className={styles.row}>
           <div className={styles.label} />
           <div
             className={`${styles.inputWrapper} ${styles.radioWrapper}`}
           >
             <Button>Pop Toast!</Button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 }
