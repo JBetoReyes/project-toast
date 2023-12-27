@@ -11,7 +11,19 @@ const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 function ToastPlayground() {
   const [message, setMessage] = React.useState('');
   const [currentVariant, setVariant] = React.useState(VARIANT_OPTIONS[0]); // ['notice', 'warning', 'success', 'error'
-  const { toasts, addToast } = React.useContext(ToastContext);
+  const { addToast, cleanAllToasts } = React.useContext(ToastContext);
+  React.useEffect(() => {
+    const handleEscapeDown = (event) => {
+      console.log(event);
+      if (event.key === 'Escape') {
+        cleanAllToasts();
+      }
+    }
+    document.addEventListener('keydown', handleEscapeDown);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeDown);
+    }
+  }, []);
   const handleMessageChange = (event) => setMessage(event.target.value);
   const handleVariantChange = (event) => setVariant(event.target.value);
   const handleSubmit = (event) => {
@@ -30,9 +42,7 @@ function ToastPlayground() {
         <img alt="Cute toast mascot" src="/toast.png" />
         <h1>Toast Playground</h1>
       </header>
-
-      {toasts.length > 0 && <ToastShelf />}
-
+      <ToastShelf />
       <form onSubmit={handleSubmit} className={styles.controlsWrapper}>
         <div className={styles.row}>
           <label
@@ -43,7 +53,12 @@ function ToastPlayground() {
             Message
           </label>
           <div className={styles.inputWrapper}>
-            <textarea id="message" className={styles.messageInput} value={message} onChange={handleMessageChange} />
+            <textarea
+              required
+              id="message"
+              className={styles.messageInput}
+              value={message}
+              onChange={handleMessageChange} />
           </div>
         </div>
 
