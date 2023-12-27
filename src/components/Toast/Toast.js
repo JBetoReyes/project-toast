@@ -8,6 +8,7 @@ import {
 } from 'react-feather';
 
 import VisuallyHidden from '../VisuallyHidden';
+import { ToastContext } from '../ToastProvider';
 
 import styles from './Toast.module.css';
 
@@ -18,7 +19,8 @@ const ICONS_BY_VARIANT = {
   error: AlertOctagon,
 };
 
-function Toast({ id, children, onDismiss = () => { }, size = '24', variant = 'notice' }) {
+function Toast({ id, children, size = '24', variant = 'notice' }) {
+  const { removeToast: onDismiss } = React.useContext(ToastContext);
   if (!ICONS_BY_VARIANT[variant]) {
     throw new Error(`Unknown variant: ${variant}`);
   }
